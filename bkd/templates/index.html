@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Intelligent Meeting Scheduler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-3xl w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+        <h2 class="text-center text-3xl font-extrabold text-blue-600 mb-6">Meet Mate</h2>
+
+        <form method="POST" class="space-y-6" id="meeting-form">
+
+            <div>
+                <label for="emails" class="block text-sm font-medium text-gray-700 mb-1">Participant Emails (comma separated):</label>
+                <input
+                    type="text"
+                    name="emails"
+                    id="emails"
+                    required
+                    placeholder="e.g., alice@gmail.com, bob@gmail.com"
+                    class="block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                />
+            </div>
+
+            <div>
+                <label for="query" class="block text-sm font-medium text-gray-700 mb-1">Enter your meeting request:</label>
+                <input
+                    type="text"
+                    name="query"
+                    id="query"
+                    required
+                    placeholder="e.g., Schedule a review meeting with the design team next Tuesday at 10 AM"
+                    class="block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                />
+            </div>
+
+            <button
+                type="submit"
+                id="submit-btn"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+            >
+                Submit
+            </button>
+        </form>
+
+
+        {% if extracted %}
+        <div class="mt-8 border border-blue-300 rounded-lg shadow-sm bg-blue-50 p-6">
+            <h3 class="text-xl font-semibold text-blue-700 mb-4">Extracted Meeting Details</h3>
+            <ul class="divide-y divide-blue-200">
+                <li class="py-2"><strong>Title:</strong> {{ extracted.title }}</li>
+                <li class="py-2"><strong>Date:</strong> {{ extracted.date }}</li>
+                <li class="py-2"><strong>Time:</strong> {{ extracted.time }}</li>
+                <li class="py-2"><strong>Duration:</strong> {{ extracted.duration }}</li>
+                <li class="py-2"><strong>Participants:</strong> {{ extracted.participants | join(', ') }}</li>
+                <li class="py-2">
+                    <strong>Platform:</strong> {{ extracted.platform }}
+                    {% if extracted.platform_link %}
+                    &nbsp;|&nbsp;
+                    <a href="{{ extracted.platform_link }}" target="_blank" class="text-blue-600 hover:underline">
+                        Join Meeting Link
+                    </a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+
+
+        {% if status %}
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Email Status</h3>
+            <ul class="space-y-2">
+                {% for msg in status %}
+                <li
+                    class="p-3 rounded-md
+                        {% if '✅' in msg %}
+                            bg-green-100 text-green-700
+                        {% elif '❌' in msg %}
+                            bg-red-100 text-red-700
+                        {% else %}
+                            bg-gray-100 text-gray-700
+                        {% endif %}  
+                    "
+                >
+                    {{ msg }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    </div>
+
+<script>
+    const form = document.getElementById('meeting-form');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', () => {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            Scheduling...
+        `;
+    });
+</script>
+
+</body>
+</html>

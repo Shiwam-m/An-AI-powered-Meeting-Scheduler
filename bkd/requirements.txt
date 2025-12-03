@@ -1,0 +1,11 @@
+flask 
+openai
+python-dotenv
+
+AzureOpenAI
+
+
+
+
+
+flask-cors
